@@ -1,0 +1,3 @@
+import {NextResponse} from 'next/server';import {getRecent} from '../../../lib/lotto';
+export const revalidate=3600;
+export async function GET(request:Request){const url=new URL(request.url);const raw=Number(url.searchParams.get('count')||'30');const count=Number.isFinite(raw)?Math.max(1,Math.min(100,Math.floor(raw))):30;const draws=await getRecent(count);return NextResponse.json({draws,source:'동행복권 공개 회차 조회',available:draws.length>0,notice:draws.length===0?'현재 당첨번호 제공처에 연결할 수 없습니다. 실제 데이터가 복구되면 다시 조회해 주세요.':undefined},{headers:{'Cache-Control':'public, s-maxage=3600, stale-while-revalidate=86400'}})}
